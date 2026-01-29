@@ -63,7 +63,7 @@ function Invoke-GitAdd {
 
 # Function: Git Commit
 function Invoke-GitCommit {
-    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Enter commit message: " -NoNewline -ForegroundColor Green
+    Write-Host "`nEnter commit message: " -NoNewline -ForegroundColor Green
     $commitMessage = Read-Host
     
     if ([string]::IsNullOrWhiteSpace($commitMessage)) {
@@ -102,7 +102,7 @@ function Invoke-GitWorkflow {
     Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand " -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
 
-    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Choose an option:" -ForegroundColor Green
+    Write-Host "`nChoose an option:" -ForegroundColor Green
     Write-Host "  A - Add all changes to stage"
     Write-Host "  C - Commit"
     Write-Host "  P - Push"
