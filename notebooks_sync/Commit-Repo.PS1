@@ -80,7 +80,7 @@ function Invoke-GitCommit {
 
 # Function: Git Push
 function Invoke-GitPush {
-    $fullCommand = "git $PushCommand"
+    $fullCommand = $PushCommand
     Write-Host "`n-------- $fullCommand -------`n"
     Invoke-Expression $fullCommand | Out-Default
 }
