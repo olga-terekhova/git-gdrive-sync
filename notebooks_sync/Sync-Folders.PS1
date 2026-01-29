@@ -132,4 +132,4 @@ $SyncLogic ={
 
 
 
-Write-Host "Finished"
+Write-Host "Finished syncing"
