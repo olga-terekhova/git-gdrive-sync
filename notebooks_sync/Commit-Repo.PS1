@@ -37,6 +37,7 @@ if (-not ($RepoPath -and $PushCommand)) {
 # --- Resolve path to repo
 # -----------------------------------
 
+Write-Host "`n-------- locating repo -------`n"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $FullRepoPath = if ([System.IO.Path]::IsPathRooted($RepoPath)) { $RepoPath } 
@@ -50,65 +51,135 @@ Set-Location $FullRepoPath
 # --- Execute git commands
 # -----------------------------------
 
-# Step 1: Show git status
+# Function: Git Add
+function Invoke-GitAdd {
 
-$gitStatusCommand = "status"
-$fullCommand = "git $gitStatusCommand"
-Invoke-Expression $fullCommand
-
-Write-Host "`nProceed with adding all changes to the stage and committing? (Y/N): " -NoNewline
-$response = Read-Host
-
-if ($response -ne "Y" -and $response -ne "y") {
-    Write-Host "Operation cancelled."
-    exit
+    $gitAddCommand = "add -A"
+    $fullCommand = "git $gitAddCommand"
+    Write-Host "`n-------- $fullCommand -------`n"
+    Invoke-Expression $fullCommand | Out-Default
+    Write-Host "Changes added to stage.`n"
 }
 
-# Step 2: Git add
-
-$gitAddCommand = "add -A"
-$fullCommand = "git $gitAddCommand"
-Invoke-Expression $fullCommand
-Write-Host "Changes added to stage.`n"
-
-Write-Host "Proceed with committing? (Y/N): " -NoNewline
-$response = Read-Host
-
-if ($response -ne "Y" -and $response -ne "y") {
-    Write-Host "Operation cancelled."
-    exit
+# Function: Git Commit
+function Invoke-GitCommit {
+    Write-Host "Enter commit message: " -NoNewline
+    $commitMessage = Read-Host
+    
+    if ([string]::IsNullOrWhiteSpace($commitMessage)) {
+        Write-Host "Commit message cannot be empty. Operation cancelled."
+        return $false
+    }
+    
+    $gitCommitCommand = "commit -m `"$commitMessage`""
+    $fullCommand = "git $gitCommitCommand"
+    Write-Host "`n-------- $fullCommand -------`n"
+    Invoke-Expression $fullCommand | Out-Default
+    return $true
 }
 
-# Step 3: Get commit message and commit
-
-Write-Host "Enter commit message: " -NoNewline
-$commitMessage = Read-Host
-
-if ([string]::IsNullOrWhiteSpace($commitMessage)) {
-    Write-Host "Commit message cannot be empty. Operation cancelled."
-    exit
+# Function: Git Push
+function Invoke-GitPush {
+    $fullCommand = "git $PushCommand"
+    Write-Host "`n-------- $fullCommand -------`n"
+    Invoke-Expression $fullCommand | Out-Default
 }
 
-$gitCommitCommand = "commit -m `"$commitMessage`""
-$fullCommand = "git $gitCommitCommand"
-Invoke-Expression $fullCommand
-
-Write-Host "`nProceed with pushing? (Y/N): " -NoNewline
-$response = Read-Host
-
-if ($response -ne "Y" -and $response -ne "y") {
-    Write-Host "Operation cancelled."
-    exit
+# Function: Ask for confirmation
+function Get-Confirmation {
+    param (
+        [string]$Message
+    )
+    Write-Host "`n$Message (Y/N): " -NoNewline
+    $response = Read-Host
+    return ($response -eq "Y" -or $response -eq "y")
 }
 
-# Step 4: Git push
-# Push command is sourced from the parameters file
+# Function: Show status and handle user choice
+function Invoke-GitWorkflow {
+    $gitStatusCommand = "status"
+    $fullCommand = "git $gitStatusCommand"
+    Write-Host "`n-------- $fullCommand -------`n"
+    Invoke-Expression $fullCommand | Out-Default
 
-$gitPushCommand = $PushCommand 
-$fullCommand = "git $gitPushCommand"
-Invoke-Expression $fullCommand
+    Write-Host "`nChoose an option:"
+    Write-Host "  S - Check status"
+    Write-Host "  A - Add all changes to stage"
+    Write-Host "  C - Commit"
+    Write-Host "  P - Push"
+    Write-Host "  Q - Quit"
+    Write-Host "Enter your choice (A/C/P/Q): " -NoNewline
+    $response = Read-Host
 
-Write-Host "`nAll operations completed successfully!"
+    switch ($response.ToUpper()) {
+        "Q" {
+            Write-Host "Quitting..."
+            return $false
+	}
+        "A" {
+            Invoke-GitAdd
+            
+            if (-not (Get-Confirmation "Proceed with committing?")) {
+                Write-Host "Operation cancelled."
+                return $true
+            }
+            
+            if (-not (Invoke-GitCommit)) {
+                return $true
+            }
+            
+            if (-not (Get-Confirmation "Proceed with pushing?")) {
+                Write-Host "Operation cancelled."
+                return $true
+            }
+            
+            Invoke-GitPush
+            Write-Host "`nAll operations completed successfully!"
+        }
+        "C" {
+            if (-not (Invoke-GitCommit)) {
+                return $true
+            }
+            
+            if (-not (Get-Confirmation "Proceed with pushing?")) {
+                Write-Host "Operation cancelled."
+                return $true
+            }
+            
+            Invoke-GitPush
+            Write-Host "`nAll operations completed successfully!"
+        }
+        "P" {
+            Invoke-GitPush
+            Write-Host "`nPush completed successfully!"
+        }
+        default {
+            Write-Host "Invalid option."
+            return $true
+        }
+    }
+    
+    return $true
+}
+
+# Main loop
+while ($true) {
+    $continue = Invoke-GitWorkflow
+    
+    if (-not $continue) {
+        break
+    }
+    
+    if (-not (Get-Confirmation "Check git status again?")) {
+        Write-Host "Done!"
+        break
+    }
+
+}
+
+# --------------------
+# --- Post processing
+# --------------------
 
 # Return to the initial location
 
