@@ -39,7 +39,7 @@ chcp 65001
 # --- RESOLVE PATHS ---
 #
 
-Write-Host "Checking for changes in Google Drive..." -ForegroundColor Cyan
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Checking for changes in Google Drive..." -ForegroundColor Cyan
 Write-Host "Google Drive Source Path: $SourcePath"
 
 # Resolve Destination to Absolute Path
@@ -75,7 +75,7 @@ function Strip-Notebook {
 # --- SYNC LOGIC --- 
 
 $SyncLogic ={
-    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Syncing..." -ForegroundColor Cyan
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Syncing..." -ForegroundColor Cyan
 
     # Robocopy with Full Safety Specs:
     # /MIR: Mirror | /XO: Exclude Older | /Z: Restartable

@@ -37,7 +37,7 @@ if (-not ($RepoPath -and $PushCommand)) {
 # --- Resolve path to repo
 # -----------------------------------
 
-Write-Host "`n-------- locating repo -------`n"
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Locating repo..."  -ForegroundColor Cyan
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $FullRepoPath = if ([System.IO.Path]::IsPathRooted($RepoPath)) { $RepoPath } 
@@ -56,14 +56,14 @@ function Invoke-GitAdd {
 
     $gitAddCommand = "add -A"
     $fullCommand = "git $gitAddCommand"
-    Write-Host "`n-------- $fullCommand -------`n"
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand"  -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
     Write-Host "Changes added to stage.`n"
 }
 
 # Function: Git Commit
 function Invoke-GitCommit {
-    Write-Host "Enter commit message: " -NoNewline
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Enter commit message: " -NoNewline -ForegroundColor Green
     $commitMessage = Read-Host
     
     if ([string]::IsNullOrWhiteSpace($commitMessage)) {
@@ -73,7 +73,7 @@ function Invoke-GitCommit {
     
     $gitCommitCommand = "commit -m `"$commitMessage`""
     $fullCommand = "git $gitCommitCommand"
-    Write-Host "`n-------- $fullCommand -------`n"
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand" -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
     return $true
 }
@@ -81,7 +81,7 @@ function Invoke-GitCommit {
 # Function: Git Push
 function Invoke-GitPush {
     $fullCommand = $PushCommand
-    Write-Host "`n-------- $fullCommand -------`n"
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand "  -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
 }
 
@@ -90,7 +90,7 @@ function Get-Confirmation {
     param (
         [string]$Message
     )
-    Write-Host "`n$Message (Y/N): " -NoNewline
+    Write-Host "`n$Message (Y/N): " -NoNewline -ForegroundColor Green
     $response = Read-Host
     return ($response -eq "Y" -or $response -eq "y")
 }
@@ -99,11 +99,10 @@ function Get-Confirmation {
 function Invoke-GitWorkflow {
     $gitStatusCommand = "status"
     $fullCommand = "git $gitStatusCommand"
-    Write-Host "`n-------- $fullCommand -------`n"
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand " -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
 
-    Write-Host "`nChoose an option:"
-    Write-Host "  S - Check status"
+    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Choose an option:" -ForegroundColor Green
     Write-Host "  A - Add all changes to stage"
     Write-Host "  C - Commit"
     Write-Host "  P - Push"
