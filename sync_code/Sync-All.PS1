@@ -3,10 +3,10 @@
 #
 
 # Sync
-. .\Sync-Folders.PS1
+. .\Sync-Notebooks.PS1
 
 # Commit
-. .\Commit-Repo.PS1
+. .\Sync-Repo.PS1
 
 
 

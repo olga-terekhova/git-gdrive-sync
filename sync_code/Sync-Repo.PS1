@@ -9,7 +9,7 @@ param (
 
 # Default to ./Params.ps1 if not provided
 if (-not $paramPath) {
-    $paramPath = Join-Path -Path $PSScriptRoot -ChildPath "_Params.ps1"
+    $paramPath = Join-Path -Path $PSScriptRoot -ChildPath "_Params-Sync-Repo.ps1"
 }
 
 # Check if parameter file exists
