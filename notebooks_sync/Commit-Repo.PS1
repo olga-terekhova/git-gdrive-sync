@@ -37,6 +37,8 @@ if (-not ($RepoPath -and $PushCommand)) {
 # --- Resolve path to repo
 # -----------------------------------
 
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Starting working with the repo..."  -ForegroundColor Cyan
+
 Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Locating repo..."  -ForegroundColor Cyan
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -58,7 +60,7 @@ function Invoke-GitAdd {
     $fullCommand = "git $gitAddCommand"
     Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand"  -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
-    Write-Host "Changes added to stage.`n"
+    Write-Host "Changes added to stage."
 }
 
 # Function: Git Commit
@@ -123,6 +125,7 @@ function Invoke-GitWorkflow {
 	}
         "A" {
             Invoke-GitAdd
+	    Invoke-GitStatus
             
             if (-not (Get-Confirmation "Proceed with committing?")) {
                 Write-Host "Operation cancelled."
@@ -132,19 +135,23 @@ function Invoke-GitWorkflow {
             if (-not (Invoke-GitCommit)) {
                 return $true
             }
-            
+	    Invoke-GitStatus            
+
             if (-not (Get-Confirmation "Proceed with pushing?")) {
                 Write-Host "Operation cancelled."
                 return $true
             }
             
             Invoke-GitPush
+
             Write-Host "`nAll operations completed successfully!"
+	    Invoke-GitStatus 
         }
         "C" {
             if (-not (Invoke-GitCommit)) {
                 return $true
             }
+	    Invoke-GitStatus
             
             if (-not (Get-Confirmation "Proceed with pushing?")) {
                 Write-Host "Operation cancelled."
@@ -152,11 +159,15 @@ function Invoke-GitWorkflow {
             }
             
             Invoke-GitPush
+
             Write-Host "`nAll operations completed successfully!"
+	    Invoke-GitStatus 
         }
         "P" {
             Invoke-GitPush
             Write-Host "`nPush completed successfully!"
+
+	    Invoke-GitStatus
         }
         default {
             Write-Host "Invalid option."
@@ -181,6 +192,8 @@ while ($true) {
     }
 
 }
+
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Finished working with the repo.`n"  -ForegroundColor Cyan
 
 # --------------------
 # --- Post processing
