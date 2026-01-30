@@ -95,12 +95,18 @@ function Get-Confirmation {
     return ($response -eq "Y" -or $response -eq "y")
 }
 
-# Function: Show status and handle user choice
-function Invoke-GitWorkflow {
+# Function: Git Status
+function Invoke-GitStatus {
     $gitStatusCommand = "status"
     $fullCommand = "git $gitStatusCommand"
     Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] $fullCommand " -ForegroundColor Cyan
     Invoke-Expression $fullCommand | Out-Default
+}
+
+# Function: Show status and handle user choice
+function Invoke-GitWorkflow {
+
+    Invoke-GitStatus
 
     Write-Host "`nChoose an option:" -ForegroundColor Green
     Write-Host "  A - Add all changes to stage"
