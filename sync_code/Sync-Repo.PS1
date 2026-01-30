@@ -137,7 +137,7 @@ function Invoke-GitWorkflow {
             }
 	    Invoke-GitStatus            
 	    
-	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "`nCommited changes will be pushed using these commands: "
 	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
             
 	    if (-not (Get-Confirmation "Proceed with pushing?")) {
@@ -156,7 +156,7 @@ function Invoke-GitWorkflow {
             }
 	    Invoke-GitStatus
             
-	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "`nCommited changes will be pushed using these commands: "
 	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
 
             if (-not (Get-Confirmation "Proceed with pushing?")) {
@@ -171,7 +171,7 @@ function Invoke-GitWorkflow {
         }
         "P" {
             
-	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "`nCommited changes will be pushed using these commands: "
 	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
 
             if (-not (Get-Confirmation "Proceed with pushing?")) {
