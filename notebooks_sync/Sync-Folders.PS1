@@ -32,6 +32,8 @@ if (-not ($SourcePath -and $DestInput)) {
 # --- EXECUTION ---
 #
 
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Starting syncing..." -ForegroundColor Cyan
+
 # Change the Windows console code page to 65001 (UTF-8)
 chcp 65001
 
@@ -82,7 +84,7 @@ $SyncLogic ={
     # /W:5 /R:2: Retries & Wait | /XD: Ignore checkpoints
     # /NJH /NJS /NS /NC /NDL /TS: Logging for parsing
     $RoboLog = robocopy "$SourcePath" "$DestinationPath" *.ipynb /MIR /XO /Z /W:5 /R:2 /XD ".ipynb_checkpoints" /NJH /NJS /NS /NC /NDL /TS
-
+    
     # Parse log for changed files (Regex ensures line starts with trailing spaces and a Date YYYY/MM/DD)
     $ChangedFiles = $RoboLog | Where-Object { $_ -match "^\s*\d{4}/\d{2}/\d{2}" } | ForEach-Object {
             # Remove the timestamp prefix to extract only the Absolute source file path
@@ -107,18 +109,21 @@ $SyncLogic ={
         # Handle cases where $ChangedFiles might be a single string instead of an array
         $FileCount = @($ChangedFiles).Count
     }
+    
+    Write-Host "Finished syncing folders. Files changed: $FileCount."
 
     # Apply stripping logic to every changed file
     if ($FileCount -gt 0) {
+	    Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Cleaning changed files..." -ForegroundColor Cyan
             foreach ($File in $ChangedFiles) {
                 if (Test-Path $File) {
                     Write-Host "  [+] Cleaning: $(Split-Path $File -Leaf)" -ForegroundColor Yellow
                     Strip-Notebook -FilePath $File
                 }
             }
-            Write-Host "Done! $FileCount file(s) synced and cleaned." -ForegroundColor Green
+            Write-Host "Done! $FileCount file(s) synced and cleaned."
         } else {
-            Write-Host "No changes detected. Everything is up to date." -ForegroundColor Gray
+            Write-Host "No changes detected. Everything is up to date." 
         }
 
 }
@@ -127,9 +132,10 @@ $SyncLogic ={
 # --- INITIALIZATION ---
 #
 
+
 # Perform one full sync on startup
 & $SyncLogic
 
 
 
-Write-Host "Finished syncing"
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Finished syncing and cleaning. `n" -ForegroundColor Cyan
