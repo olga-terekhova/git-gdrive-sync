@@ -39,7 +39,7 @@ if (-not ($RepoPath -and $PushCommand)) {
 
 Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Starting working with the repo..."  -ForegroundColor Cyan
 
-Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Locating repo..."  -ForegroundColor Cyan
+Write-Host "`n[$(Get-Date -Format 'HH:mm:ss')] Locating repo folder..."  -ForegroundColor Cyan
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $FullRepoPath = if ([System.IO.Path]::IsPathRooted($RepoPath)) { $RepoPath } 
@@ -136,8 +136,11 @@ function Invoke-GitWorkflow {
                 return $true
             }
 	    Invoke-GitStatus            
-
-            if (-not (Get-Confirmation "Proceed with pushing?")) {
+	    
+	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
+            
+	    if (-not (Get-Confirmation "Proceed with pushing?")) {
                 Write-Host "Operation cancelled."
                 return $true
             }
@@ -153,6 +156,9 @@ function Invoke-GitWorkflow {
             }
 	    Invoke-GitStatus
             
+	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
+
             if (-not (Get-Confirmation "Proceed with pushing?")) {
                 Write-Host "Operation cancelled."
                 return $true
@@ -164,7 +170,16 @@ function Invoke-GitWorkflow {
 	    Invoke-GitStatus 
         }
         "P" {
-            Invoke-GitPush
+            
+	    Write-Host "Commited changes will be pushed using these commands: "
+	    Write-Host "  " + $PushCommand  -ForegroundColor Yellow
+
+            if (-not (Get-Confirmation "Proceed with pushing?")) {
+                Write-Host "Operation cancelled."
+                return $true
+            }
+
+	    Invoke-GitPush
             Write-Host "`nPush completed successfully!"
 
 	    Invoke-GitStatus
