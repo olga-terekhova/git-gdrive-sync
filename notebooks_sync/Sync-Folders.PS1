@@ -121,9 +121,9 @@ $SyncLogic ={
                     Strip-Notebook -FilePath $File
                 }
             }
-            Write-Host "Done! $FileCount file(s) synced and cleaned."
+            Write-Host "Done! $FileCount file(s) synced and cleaned." -ForegroundColor Yellow
         } else {
-            Write-Host "No changes detected. Everything is up to date." 
+            Write-Host "No changes detected. Everything is up to date." -ForegroundColor Yellow
         }
 
 }
