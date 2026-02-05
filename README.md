@@ -5,7 +5,7 @@ It is tricky to version control Google Colab notebooks.
 They are designed to be stored on Google Drive, but it is strongly discouraged to store a git folder on mounted cloud storage like Google Drive or OneDrive.  
 This leads to a setup where Colab notebooks are stored outside a git location, which creates syncronization problems.  
 
-Let's look closely at possible alternatives.  
+Let's look closely at possible alternatives:  
 1) The git repo folder is stored within a locally mounted Google Drive disk.  
     <img src="./docs/components_2.png" width="800">  
     Downsides:  
@@ -58,4 +58,6 @@ It shows the updated repo status, and asks the user if another iteration of revi
 If the user declines, the script exits.  
 <img src="./docs/screen_6.png" width="800">  
   
-  
+## project evolution
+
+Future work on this functionality will be performed as part of the [repo-utils project](https://github.com/olga-terekhova/repo-utils).  
